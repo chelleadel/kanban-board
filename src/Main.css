@@ -1,0 +1,12 @@
+.Base {
+    background-color: white;
+    height: '100%';
+    align-content: center;
+}
+
+.Column {
+    display: flex;
+    float:left;
+    flex-direction: column;
+    align-items: center;
+}
