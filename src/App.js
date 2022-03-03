@@ -2,7 +2,7 @@ import "./Main.css";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
-import { Typography, Button } from "@material-ui/core";
+import { Typography, Button, TextField } from "@material-ui/core";
 
 const columnItems = [{ id: uuid(), content: "Hello World" }];
 
@@ -23,7 +23,7 @@ const columnNames = {
 
 // function to move items to different columns
 const onDragFunc = (result, columns, setColumns) => {
-	const maxItem = 1;
+	const maxItem = 2;
 	if (!result.destination) return;
 	const { source, destination } = result;
 	if (source.droppableId !== destination.droppableId) {
@@ -54,6 +54,7 @@ const onDragFunc = (result, columns, setColumns) => {
 		setColumns({
 			...columns,
 			[source.droppableId]: {
+				...column,
 				items: copy,
 			},
 		});
@@ -62,6 +63,7 @@ const onDragFunc = (result, columns, setColumns) => {
 
 function App() {
 	const [columns, setColumns] = useState(columnNames);
+	
 	return (
 		<div className="Base">
 			<Typography variant="h1">Kanban Board</Typography>
@@ -85,6 +87,7 @@ function App() {
 												}}
 											>
 												{column.items.map((item, index) => {
+													var itemContent = item.content;
 													return (
 														<Draggable key={item.id} draggableId={item.id} index={index}>
 															{(provided, snapshot) => {
@@ -103,7 +106,41 @@ function App() {
 																			...provided.draggableProps.style,
 																		}}
 																	>
-																		{item.content}
+																		<div>
+																			<TextField
+																				style={{ border: "none" }}
+																				variant="outlined"
+																				type="text"
+																				value={itemContent}
+																				onChange={(e) => {
+																					const copy = [...column.items];
+																					// reach here
+																					copy[index] = { id: item.id, content: e.target.value };
+																					setColumns({
+																						...columns,
+																						[{ id }.id]: {
+																							...column,
+																							items: copy,
+																						},
+																					});
+																				}}
+																			></TextField>
+																		</div>
+																		<Button
+																			onClick={() => {
+																				const copy = [...column.items];
+																				copy.splice(index, 1);
+																				setColumns({
+																					...columns,
+																					[{ id }.id]: {
+																						...column,
+																						items: copy,
+																					},
+																				});
+																			}}
+																		>
+																			Delete
+																		</Button>
 																	</div>
 																);
 															}}
@@ -115,7 +152,24 @@ function App() {
 										);
 									}}
 								</Droppable>
-								<Button>+ Add Item</Button>
+								<Button
+									onClick={() => {
+										const column = columns[{ id }.id];
+										if (column.items !== "undefined") {
+											const copy = [...column.items];
+											copy.push({ id: uuid(), content: "Type Here" });
+											setColumns({
+												...columns,
+												[{ id }.id]: {
+													...column,
+													items: copy,
+												},
+											});
+										}
+									}}
+								>
+									+ Add Item
+								</Button>
 							</div>
 						);
 					})}
