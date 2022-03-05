@@ -1,13 +1,35 @@
 .Base {
-    background-color: white;
-    height: '100%';
-    align-content: center;
+	background-color: white;
+	height: "100%";
+	align-content: center;
 }
 
 .Column {
-    display: flex;
-    float:left;
-    flex-direction: column;
-    align-items: center;
+	display: flex;
+	float: left;
+	flex-direction: column;
+	align-items: center;
 }
 
+.Title {
+    align-items: center;
+    text-align: center;
+}
+
+.Buttons {
+    margin: 20px;
+    float: left
+}
+
+.AddKanbanButton {
+	width: 350px;
+	height: 200px;
+	min-width: 100%;
+}
+
+.ExistingKanbanButton {
+	width: 350px;
+	height: 200px;
+	min-width: 100%;
+	text-transform: unset !important;
+}
