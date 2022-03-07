@@ -3,6 +3,10 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import { Typography, Button, TextField } from "@material-ui/core";
+import { useLocation } from "react-router-dom";
+
+// limit of the items in each column
+const maxItem = 2;
 
 const columnItems = [{ id: uuid(), content: "Hello World" }];
 
@@ -23,7 +27,6 @@ const columnNames = {
 
 // function to move items to different columns
 const onDragFunc = (result, columns, setColumns) => {
-	const maxItem = 2;
 	if (!result.destination) return;
 	const { source, destination } = result;
 	if (source.droppableId !== destination.droppableId) {
@@ -61,18 +64,31 @@ const onDragFunc = (result, columns, setColumns) => {
 	}
 };
 
+const kanbanName = "";
+const kanbanDescription = "";
+
 function KanbanBoard() {
 	const [columns, setColumns] = useState(columnNames);
+	const [name, setName] = useState(kanbanName);
+	const [description, setDescription] = useState(kanbanDescription);
+	const location = useLocation();
+	const from = location.state;
+
+	if (name == "") {
+		setName(from.name)
+		setDescription(from.description)
+	}
 
 	return (
 		<div className="Base">
-			<Typography variant="h1">Kanban Board</Typography>
+			<Typography variant="h1"> {name} </Typography>
+			<Typography variant="h4"> {description} </Typography>
 			<div>
 				<DragDropContext onDragEnd={(result) => onDragFunc(result, columns, setColumns)}>
 					{Object.entries(columns).map(([id, column]) => {
 						return (
 							<div className="Column">
-								<Typography variant="h2">{column.name}</Typography>
+								<Typography variant="h4">{column.name}</Typography>
 								<Droppable droppableId={id} key={id}>
 									{(provided, snapshot) => {
 										return (
@@ -157,14 +173,16 @@ function KanbanBoard() {
 										const column = columns[{ id }.id];
 										if (column.items !== "undefined") {
 											const copy = [...column.items];
-											copy.push({ id: uuid(), content: "Type Here" });
-											setColumns({
-												...columns,
-												[{ id }.id]: {
-													...column,
-													items: copy,
-												},
-											});
+											if (copy.length < maxItem) {
+												copy.push({ id: uuid(), content: "Type Here" });
+												setColumns({
+													...columns,
+													[{ id }.id]: {
+														...column,
+														items: copy,
+													},
+												});
+											}
 										}
 									}}
 								>

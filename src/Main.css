@@ -1,7 +1,8 @@
 .Base {
 	background-color: white;
 	height: "100%";
-	align-content: center;
+	text-align: center;
+	justify-content: center;
 }
 
 .Column {
@@ -12,13 +13,8 @@
 }
 
 .Title {
-    align-items: center;
-    text-align: center;
-}
-
-.Buttons {
-    margin: 20px;
-    float: left
+	align-items: center;
+	text-align: center;
 }
 
 .AddKanbanButton {
@@ -27,7 +23,9 @@
 	min-width: 100%;
 }
 
-.ExistingKanbanButton {
+.ExistingKanban {
+	margin: 20px;
+	float: left;
 	width: 350px;
 	height: 200px;
 	min-width: 100%;
