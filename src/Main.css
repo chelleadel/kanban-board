@@ -1,15 +1,8 @@
 .Base {
-	background-color: white;
+	background-color: #f6f6f6;
 	height: "100%";
 	text-align: center;
 	justify-content: center;
-}
-
-.Column {
-	display: flex;
-	float: left;
-	flex-direction: column;
-	align-items: center;
 }
 
 .Title {
@@ -28,6 +21,25 @@
 	float: left;
 	width: 350px;
 	height: 200px;
-	min-width: 100%;
-	text-transform: unset !important;
+	background-color: lightgrey;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 8px;
+}
+
+.LinkToIndividualBoard {
+	width: 250px;
+	height: 200px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.BodyKanban {
+	justify-content: center;
+	align-items: center;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
 }

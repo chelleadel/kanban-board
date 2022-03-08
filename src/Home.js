@@ -16,12 +16,10 @@ import { Link } from "react-router-dom";
 
 const kanbanboards = [
 	{
-		id: uuid(),
 		name: "Kanban Board #1",
 		description: "This is a Kanban Board",
 	},
 	{
-		id: uuid(),
 		name: "Kanban Board #2",
 		description: "Michelle's Kanban Board",
 	},
@@ -32,7 +30,7 @@ function Home() {
 	const [open, setOpen] = useState(false);
 	const [newName, setName] = useState("");
 	const [newDescription, setDescription] = useState("");
-
+	// Functions for Add Kanban Board Dialog Box
 	const handleClickOpen = () => {
 		setOpen(true);
 	};
@@ -50,13 +48,13 @@ function Home() {
 	};
 
 	const handleAdd = () => {
-		setKanbanBoards({
-			...kanbanboards,
-			[uuid()]: {
-				name: newName,
-				description: newDescription,
-			},
-		});
+		const copy = [...boards];
+		const newBoard = {
+			name: newName,
+			description: newDescription,
+		};
+		copy.push(newBoard);
+		setKanbanBoards(copy);
 
 		setName("");
 		setDescription("");
@@ -68,7 +66,7 @@ function Home() {
 			<div className="Title">
 				<Typography variant="h3"> My Kanban Boards</Typography>
 			</div>
-			<div className="Buttons">
+			<div style={{ margin: "20px", float: "left" }}>
 				<Button variant="contained" color="primary" className="AddKanbanButton" onClick={handleClickOpen}>
 					+ <br /> Create A Kanban Board
 				</Button>
@@ -103,28 +101,35 @@ function Home() {
 					<Button onClick={handleAdd}>Add</Button>
 				</DialogActions>
 			</Dialog>
-			{Object.entries(boards).map(([id, board], index) => {
+			{boards.map((board, index) => {
 				const name = board.name;
 				const description = board.description;
 				return (
-					<div className="ExistingKanban">
-						<Link to="/kanbanboard" style={{ textDecoration: "none" }} state={{ name: name, description: description }}>
-							<Box>
-								<Typography>
-									{board.name} <br /> {board.description}
-								</Typography>
-							</Box>
-						</Link>
-						<Button>Edit</Button>
-						<Button
-							onClick={() => {
-								const copy = [...boards];
-								copy.splice(index, 1);
-								setKanbanBoards(copy);
-							}}
-						>
-							Delete
-						</Button>
+					<div>
+						<Box className="ExistingKanban">
+							<Link
+								to="/kanbanboard"
+								style={{ textDecoration: "none", color: "black" }}
+								state={{ name: name, description: description }}
+							>
+								<div className="LinkToIndividualBoard">
+									<Typography style={{ textAlign: "center" }}>
+										{board.name} <br /> {board.description}
+									</Typography>
+								</div>
+							</Link>
+							<Button
+								style={{ height: "200px" }}
+								color="secondary"
+								onClick={() => {
+									const copy = [...boards];
+									copy.splice(index, 1);
+									setKanbanBoards(copy);
+								}}
+							>
+								Delete
+							</Button>
+						</Box>
 					</div>
 				);
 			})}

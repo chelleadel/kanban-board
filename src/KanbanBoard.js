@@ -2,7 +2,16 @@ import "./Main.css";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
-import { Typography, Button, TextField } from "@material-ui/core";
+import {
+	Typography,
+	Button,
+	TextField,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+} from "@material-ui/core";
 import { useLocation } from "react-router-dom";
 
 // limit of the items in each column
@@ -71,24 +80,76 @@ function KanbanBoard() {
 	const [columns, setColumns] = useState(columnNames);
 	const [name, setName] = useState(kanbanName);
 	const [description, setDescription] = useState(kanbanDescription);
+	const [counter, setCounter] = useState(0);
 	const location = useLocation();
 	const from = location.state;
 
-	if (name == "") {
-		setName(from.name)
-		setDescription(from.description)
+	if (counter == 0) {
+		setName(from.name);
+		setDescription(from.description);
+		setCounter(1);
 	}
+
+	// Functions for Edit Kanban Board Dialog Box
+
+	const [editOpen, setEditOpen] = useState(false);
+
+	const handleEditClickOpen = () => {
+		setEditOpen(true);
+	};
+
+	const handleEditClose = () => {
+		setEditOpen(false);
+	};
 
 	return (
 		<div className="Base">
-			<Typography variant="h1"> {name} </Typography>
-			<Typography variant="h4"> {description} </Typography>
-			<div>
+			<Typography variant="h2"> {name} </Typography>
+			<Typography variant="h5"> {description} </Typography>
+			<Button color="secondary" onClick={handleEditClickOpen}>
+				Edit Board Details
+			</Button>
+			<Dialog open={editOpen} onClose={handleEditClose}>
+				<DialogTitle>Edit Kanban Board</DialogTitle>
+				<DialogContent>
+					<TextField
+						autoFocus
+						margin="dense"
+						id="name"
+						label="Name"
+						type="text"
+						value={name}
+						fullWidth
+						variant="standard"
+						onChange={(e) => {
+							setName(e.target.value);
+						}}
+					/>
+					<TextField
+						autoFocus
+						margin="dense"
+						id="description"
+						label="Description"
+						type="text"
+						value={description}
+						fullWidth
+						variant="standard"
+						onChange={(e) => {
+							setDescription(e.target.value);
+						}}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleEditClose}>Cancel</Button>
+					<Button onClick={handleEditClose}>Save Changes</Button>
+				</DialogActions>
+			</Dialog>
+			<div className="BodyKanban">
 				<DragDropContext onDragEnd={(result) => onDragFunc(result, columns, setColumns)}>
 					{Object.entries(columns).map(([id, column]) => {
 						return (
-							<div className="Column">
-								<Typography variant="h4">{column.name}</Typography>
+							<div>
+								<Typography variant="h5">{column.name}</Typography>
 								<Droppable droppableId={id} key={id}>
 									{(provided, snapshot) => {
 										return (
@@ -99,9 +160,32 @@ function KanbanBoard() {
 													minWidth: 250,
 													background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
 													minHeight: 550,
-													margin: "0 8px 0 0",
+													margin: "0 30px 0 0",
+													boxShadow: "5px",
+													borderRadius: "10px",
 												}}
 											>
+												<Button
+													fullWidth
+													onClick={() => {
+														const column = columns[{ id }.id];
+														if (column.items !== "undefined") {
+															const copy = [...column.items];
+															if (copy.length < maxItem) {
+																copy.push({ id: uuid(), content: "Type Here" });
+																setColumns({
+																	...columns,
+																	[{ id }.id]: {
+																		...column,
+																		items: copy,
+																	},
+																});
+															}
+														}
+													}}
+												>
+													+
+												</Button>
 												{column.items.map((item, index) => {
 													var itemContent = item.content;
 													return (
@@ -116,10 +200,11 @@ function KanbanBoard() {
 																			userSelect: "none",
 																			padding: 16,
 																			textAlign: "center",
-																			margin: "0 0 8px 0",
+																			margin: "2px 0 8px 0",
 																			color: "white",
 																			backgroundColor: snapshot.isDragging ? "grey" : "lightblue",
 																			...provided.draggableProps.style,
+																			borderRadius: "10px",
 																		}}
 																	>
 																		<div>
@@ -130,7 +215,6 @@ function KanbanBoard() {
 																				value={itemContent}
 																				onChange={(e) => {
 																					const copy = [...column.items];
-																					// reach here
 																					copy[index] = { id: item.id, content: e.target.value };
 																					setColumns({
 																						...columns,
@@ -168,26 +252,6 @@ function KanbanBoard() {
 										);
 									}}
 								</Droppable>
-								<Button
-									onClick={() => {
-										const column = columns[{ id }.id];
-										if (column.items !== "undefined") {
-											const copy = [...column.items];
-											if (copy.length < maxItem) {
-												copy.push({ id: uuid(), content: "Type Here" });
-												setColumns({
-													...columns,
-													[{ id }.id]: {
-														...column,
-														items: copy,
-													},
-												});
-											}
-										}
-									}}
-								>
-									+ Add Item
-								</Button>
 							</div>
 						);
 					})}
